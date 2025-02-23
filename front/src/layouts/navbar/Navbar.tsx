@@ -1,5 +1,5 @@
-import React from 'react';
-import { Layout, Menu, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Layout, Menu, Typography, Badge } from 'antd';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import {
@@ -9,6 +9,9 @@ import {
   MailOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
+import { getCartById } from '../../api/cart/api'; // Import the API function to fetch cart data
+import { CartItem } from '../../utils/types/api.types';
+
 const { Header } = Layout;
 const { Title } = Typography;
 
@@ -17,7 +20,7 @@ type MenuItem = {
   label: string;
   icon: React.ReactNode;
   path: string;
-  hiddenOnAuthPages?: boolean; 
+  hiddenOnAuthPages?: boolean;
 };
 
 const menuItems: MenuItem[] = [
@@ -27,7 +30,7 @@ const menuItems: MenuItem[] = [
     label: 'Favoris',
     icon: <HeartOutlined />,
     path: '/favoris',
-    hiddenOnAuthPages: true, 
+    hiddenOnAuthPages: true,
   },
   {
     key: '3',
@@ -41,14 +44,41 @@ const menuItems: MenuItem[] = [
     label: 'Mon panier',
     icon: <ShoppingCartOutlined />,
     path: '/cart',
-    hiddenOnAuthPages: true, 
+    hiddenOnAuthPages: true,
   },
   { key: '5', label: 'Contact', icon: <MailOutlined />, path: '/contact' },
 ];
 
 const Navbar: React.FC = () => {
-  const location = useLocation(); 
+  const location = useLocation();
   const isAuthPage = ['/signin', '/signup'].includes(location.pathname); 
+  const [cartItemCount, setCartItemCount] = useState(0);
+  useEffect(() => {
+    const fetchCartItemCount = async () => {
+      try {
+        const storedUser = localStorage.getItem('user');
+        const userCartId =
+          storedUser && JSON.parse(storedUser).cart?.id
+            ? JSON.parse(storedUser).cart.id
+            : null;
+
+        if (userCartId) {
+          const response = await getCartById({ id: userCartId });
+          if (response.status === 200 && response.data) {
+            const totalItems = response.data.items.reduce(
+              (sum, item: CartItem) => sum + item.quantity,
+              0
+            );
+            setCartItemCount(totalItems);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching cart item count:', error);
+      }
+    };
+
+    fetchCartItemCount();
+  }, []); 
   return (
     <Header
       style={{
@@ -80,16 +110,34 @@ const Navbar: React.FC = () => {
           justifyContent: 'flex-end',
         }}
         items={menuItems
-          .filter((item) => !item.hiddenOnAuthPages || !isAuthPage) 
-          .map((item) => ({
-            key: item.key,
-            label: (
-              <Link to={item.path}>
-                <span style={{ padding: '0 8px' }}>{item.label}</span>
-              </Link>
-            ),
-            icon: item.icon,
-          }))}
+          .filter((item) => !item.hiddenOnAuthPages || !isAuthPage)
+          .map((item) => {
+            if (item.key === '4') {
+              return {
+                key: item.key,
+                label: (
+                  <Link to={item.path}>
+                    <span style={{ padding: '0 8px' }}>{item.label}</span>
+                  </Link>
+                ),
+                icon: (
+                  <Badge count={cartItemCount} offset={[10, 0]} showZero>
+                    <ShoppingCartOutlined />
+                  </Badge>
+                ),
+              };
+            }
+
+            return {
+              key: item.key,
+              label: (
+                <Link to={item.path}>
+                  <span style={{ padding: '0 8px' }}>{item.label}</span>
+                </Link>
+              ),
+              icon: item.icon,
+            };
+          })}
       />
     </Header>
   );
