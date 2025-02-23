@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Badge } from 'antd';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom'; // Import useLocation
+import React, { useEffect, useState } from "react";
+import { Layout, Menu, Typography, Badge } from "antd";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom"; // Import useLocation
 import {
   UserOutlined,
   HeartOutlined,
   ShoppingCartOutlined,
   MailOutlined,
   HomeOutlined,
-} from '@ant-design/icons';
-import { getCartById } from '../../api/cart/api'; // Import the API function to fetch cart data
-import { CartItem } from '../../utils/types/api.types';
+} from "@ant-design/icons";
+import { getCartById } from "../../api/cart/api"; // Import the API function to fetch cart data
+import { CartItem } from "../../utils/types/api.types";
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -24,39 +24,39 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  { key: '1', label: 'Home', icon: <HomeOutlined />, path: '/' },
+  { key: "1", label: "Home", icon: <HomeOutlined />, path: "/" },
   {
-    key: '2',
-    label: 'Favoris',
+    key: "2",
+    label: "Favoris",
     icon: <HeartOutlined />,
-    path: '/favoris',
+    path: "/favoris",
     hiddenOnAuthPages: true,
   },
   {
-    key: '3',
-    label: 'Profile',
+    key: "3",
+    label: "Profile",
     icon: <UserOutlined />,
-    path: '/profile',
+    path: "/profile",
     hiddenOnAuthPages: true,
   },
   {
-    key: '4',
-    label: 'Mon panier',
+    key: "4",
+    label: "Mon panier",
     icon: <ShoppingCartOutlined />,
-    path: '/cart',
+    path: "/cart",
     hiddenOnAuthPages: true,
   },
-  { key: '5', label: 'Contact', icon: <MailOutlined />, path: '/contact' },
+  { key: "5", label: "Contact", icon: <MailOutlined />, path: "/contact" },
 ];
 
 const Navbar: React.FC = () => {
   const location = useLocation();
-  const isAuthPage = ['/signin', '/signup'].includes(location.pathname); 
+  const isAuthPage = ["/signin", "/signup"].includes(location.pathname);
   const [cartItemCount, setCartItemCount] = useState(0);
   useEffect(() => {
     const fetchCartItemCount = async () => {
       try {
-        const storedUser = localStorage.getItem('user');
+        const storedUser = localStorage.getItem("user");
         const userCartId =
           storedUser && JSON.parse(storedUser).cart?.id
             ? JSON.parse(storedUser).cart.id
@@ -73,27 +73,27 @@ const Navbar: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('Error fetching cart item count:', error);
+        console.error("Error fetching cart item count:", error);
       }
     };
 
     fetchCartItemCount();
-  }, []); 
+  }, []);
   return (
     <Header
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <img
           src="/src/assets/pictures/alten-logo.png"
           alt="Logo"
-          style={{ height: '40px' }}
+          style={{ height: "40px" }}
         />
-        <Title level={3} style={{ color: '#fff', margin: 0 }}>
+        <Title level={3} style={{ color: "#fff", margin: 0 }}>
           AltenEcom
         </Title>
       </div>
@@ -101,27 +101,32 @@ const Navbar: React.FC = () => {
       <Menu
         theme="dark"
         mode="horizontal"
-        defaultSelectedKeys={['1']}
+        defaultSelectedKeys={["1"]}
         style={{
           flex: 1,
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          padding: '0 16px',
-          justifyContent: 'flex-end',
+          overflowX: "auto",
+          whiteSpace: "nowrap",
+          padding: "0 16px",
+          justifyContent: "flex-end",
         }}
         items={menuItems
           .filter((item) => !item.hiddenOnAuthPages || !isAuthPage)
           .map((item) => {
-            if (item.key === '4') {
+            if (item.key === "4") {
               return {
                 key: item.key,
                 label: (
                   <Link to={item.path}>
-                    <span style={{ padding: '0 8px' }}>{item.label}</span>
+                    <span style={{ padding: "0 8px" }}>{item.label}</span>
                   </Link>
                 ),
                 icon: (
-                  <Badge count={cartItemCount} offset={[10, 0]} showZero>
+                  <Badge
+                    count={cartItemCount}
+                    style={{ minWidth: "15px", maxHeight: "15px" }}
+                    offset={[10, 0]}
+                    showZero
+                  >
                     <ShoppingCartOutlined />
                   </Badge>
                 ),
@@ -132,7 +137,7 @@ const Navbar: React.FC = () => {
               key: item.key,
               label: (
                 <Link to={item.path}>
-                  <span style={{ padding: '0 8px' }}>{item.label}</span>
+                  <span style={{ padding: "0 8px" }}>{item.label}</span>
                 </Link>
               ),
               icon: item.icon,
