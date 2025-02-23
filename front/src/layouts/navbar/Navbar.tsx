@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Layout, Menu, Typography, Badge } from "antd";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { useLocation } from "react-router-dom"; 
 import {
   UserOutlined,
   HeartOutlined,
@@ -9,12 +9,11 @@ import {
   MailOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
-import { getCartById } from "../../api/cart/api"; // Import the API function to fetch cart data
+import { getCartById } from "../../api/cart/api"; 
 import { CartItem } from "../../utils/types/api.types";
 
 const { Header } = Layout;
 const { Title } = Typography;
-
 type MenuItem = {
   key: string;
   label: string;
@@ -78,7 +77,7 @@ const Navbar: React.FC = () => {
     };
 
     fetchCartItemCount();
-  }, []);
+  }, [location.pathname]);
   return (
     <Header
       style={{
